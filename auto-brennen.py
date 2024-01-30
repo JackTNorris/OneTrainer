@@ -17,7 +17,6 @@ import argparse
 from pathlib import Path
 
 
-bat_file_path = "train.bat"
 template_argument_file = "arguments.json"
 template_concepts_file = "default-concepts.json"
 batch_size = 8
@@ -124,11 +123,11 @@ def train_model(home_dir, model_output_destination, concepts_loc, num_epochs):
     train_commands['workspace-dir'] = home_dir + '/workspace/run'
     train_commands['cache-dir'] = home_dir + '/workspace-cache/run'
     train_commands['concept-file-name'] = concepts_loc
-    train_commands['epochs'] = num_epochs
+    train_commands['epochs'] = 10
+    train_commands['batch-size'] = batch_size
     train_commands['output-model-destination'] = model_output_destination
     subprocess.run("python scripts/train.py " + dict_to_command_line_args(train_commands) + " --tensorboard --gradient-checkpointing --backup-before-save --aspect-ratio-bucketing --latent-caching --clear-cache-before-training --train-unet --train-prior --samples-to-tensorboard --non-ema-sampling --backup-before-save", shell=True)
     print('Completed training for ' + model_output_destination)
-    
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(
@@ -138,10 +137,3 @@ if __name__ == "__main__":
 
     args = parse_console_args(parser)
     main(args.input_directory, args.model_output_destination)
-
-"""
-# Example usage
-json_file = "arguments.json"  # Replace with your JSON file path
-#print("python scripts/train.py " + json_to_command_line_args(json_file))
-subprocess.run("python scripts/train.py " + json_to_command_line_args(json_file) + " --tensorboard --gradient-checkpointing --backup-before-save --aspect-ratio-bucketing --latent-caching --clear-cache-before-training --train-unet --train-prior --samples-to-tensorboard --non-ema-sampling --backup-before-save", shell=True)
-"""
