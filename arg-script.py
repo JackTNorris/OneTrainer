@@ -109,17 +109,20 @@ def main(input_directory, model_destination_folder):
         num_pics = max(len(get_png_filenames(input_directory + '/' + folder)), 1)
         print("num_pics", num_pics)
         num_epochs = int(max(max_steps / (num_pics / batch_size), 1))
+        #fix this dude
         create_concepts_file(input_directory + '/' + folder, model_destination_folder + '/' + name)
-        train_model(model_destination_folder + '/' + name + '/' + name + '.safetensor', model_destination_folder + '/' + name + '/concepts.json', 30)
+        train_model(model_destination_folder + '/' + name, model_destination_folder + '/' + name + '/' + name + '.safetensors', model_destination_folder + '/' + name + '/concepts.json', num_epochs)
 
 
-def train_model(model_output_destination, concepts_loc, num_epochs):
+def train_model(home_dir, model_output_destination, concepts_loc, num_epochs):
     train_commands = read_json_to_object(template_argument_file)
     """
     1. reconfigure epochs
     2. set concepts folder
     3. set model output folder
     """
+    train_commands['workspace-dir'] = home_dir + '/workspace/run'
+    train_commands['cache-dir'] = home_dir + '/workspace-cache/run'
     train_commands['concept-file-name'] = concepts_loc
     train_commands['epochs'] = num_epochs
     train_commands['output-model-destination'] = model_output_destination
